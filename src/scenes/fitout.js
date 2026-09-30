@@ -125,7 +125,8 @@ export const fitout = {
     box(0.12, 0.05, 2 * D, XW - 0.02, 0.025, 0, alu); box(0.12, 0.04, 2 * D, XW - 0.02, SOF - 0.02, 0, alu);
     const glass = new THREE.Mesh(new THREE.PlaneGeometry(2 * D, SOF), new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.03, metalness: 0, transparent: true, opacity: 0.06, envMapIntensity: 0.6 }));
     glass.rotation.y = Math.PI / 2; glass.position.set(XW - 0.02, SOF / 2, 0); scene.add(glass);
-    const vt = tex('assets/posts/film_0.1.jpg', 1, true); vt.wrapS = vt.wrapT = THREE.ClampToEdgeWrapping;
+    // the view from the tower: the city running down to the sea and the fort at dusk (not a still with the tower in it)
+    const vt = tex('assets/posts/film_0.88.jpg', 1, true); vt.wrapS = vt.wrapT = THREE.ClampToEdgeWrapping;
     view = new THREE.Mesh(new THREE.PlaneGeometry(26, 26), new THREE.MeshBasicMaterial({ map: vt, fog: false }));
     view.material.onBeforeCompile = (sh) => { sh.fragmentShader = sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
       vec3 vc = diffuseColor.rgb; float vl = dot(vc, vec3(0.2126, 0.7152, 0.0722));

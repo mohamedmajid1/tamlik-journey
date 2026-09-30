@@ -2013,7 +2013,7 @@ setPointScale();
    rendered from the matching camera, so flying in is one continuous move.
    --------------------------------------------------------- */
 const heroWindows = [];
-function heroWindow({ c, n, w, h, surround = [1.1, 0.75, 0.9], stone = 0xb9b1a6, label = '' }) {
+function heroWindow({ c, n, w, h, surround = [1.1, 0.75, 0.9], stone = 0xcfc9c0, label = '' }) {
   const g = new THREE.Group();
   g.position.copy(c);
   g.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), n);
@@ -2056,8 +2056,8 @@ function heroWindow({ c, n, w, h, surround = [1.1, 0.75, 0.9], stone = 0xb9b1a6,
       if ('letterSpacing' in x) x.letterSpacing = '10px';
       x.textBaseline = 'middle'; x.fillText(label, 34, ch / 2 + 2);
     });
-    tag = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 2.6 * 128 / 1024), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, toneMapped: false }));
-    tag.position.set(w / 2 + 0.25, h / 2 + 0.55, 0.16); tag.geometry.translate(1.3, 0, 0); tag.userData.noAO = true; g.add(tag);
+    tag = new THREE.Mesh(new THREE.PlaneGeometry(3.8, 3.8 * 128 / 1024), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, toneMapped: false }));
+    tag.position.set(w / 2 + 0.25, h / 2 + 0.55, 0.16); tag.geometry.translate(1.9, 0, 0); tag.userData.noAO = true; g.add(tag);
   }
   scene.add(g); adopt(g); g.updateMatrixWorld(true);
   const win = { g, c: c.clone(), n: n.clone(), w, h, lines, tag, spill, draw: 0 };

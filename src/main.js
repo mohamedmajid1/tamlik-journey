@@ -26,13 +26,19 @@ const ROOMS = [maintenance, media, fitout];
 const portrait = Q.get('o') ? Q.get('o') === 'portrait' : innerHeight >= innerWidth;
 stage.className = portrait ? 'portrait' : 'landscape';
 const W = portrait ? 1080 : 1920, H = portrait ? 1920 : 1080;
+// fill the screen (no black bars): scale to cover and crop the overflow evenly, as long as that loses at most 22% of
+// the film's width or height; a much different shape (a portrait film on a wide screen) is shown whole instead
+const scaleK = () => {
+  const cover = Math.max(innerWidth / W, innerHeight / H), contain = Math.min(innerWidth / W, innerHeight / H);
+  return contain / cover >= 0.78 ? cover : contain;
+};
 function fit() {
-  const k = Math.min(innerWidth / W, innerHeight / H);
+  const k = scaleK();
   stage.style.transform = `translate(${-W * k / 2}px, ${-H * k / 2}px) scale(${k})`;
 }
 fit(); addEventListener('resize', fit);
 // live: render at the size the screen really shows the film, up to 1.5× (?hq: up to 2×)
-const shownScale = () => Math.min(innerWidth / W, innerHeight / H) * devicePixelRatio;
+const shownScale = () => scaleK() * devicePixelRatio;
 QUALITY.pr = Q.has('pr') ? +Q.get('pr') : Q.has('hq') ? Math.min(devicePixelRatio, 2) : Math.min(1.5, Math.max(0.6, shownScale()));
 
 const chars = (s) => [...s].map((c) => `<span class="ch">${c === ' ' ? '&nbsp;' : c}</span>`).join('');

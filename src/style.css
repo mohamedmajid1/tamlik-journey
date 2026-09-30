@@ -1,0 +1,156 @@
+:root {
+  --ink: #08090b;
+  --ink-2: #111317;
+  --paper: #f2ede4;
+  --muted: rgba(242, 237, 228, .62);
+  --faint: rgba(242, 237, 228, .16);
+  --green: #01A652;
+  --green-text: #3fd186;
+  --grey: #595A5C;
+  --accent: var(--green-text);            /* each department sets its own */
+  --serif: "Cormorant Garamond", "Times New Roman", serif;
+  --sans: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--ink); color: var(--paper); overflow: hidden; }
+body { font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+
+/* the film is authored on a fixed canvas (1080×1920 portrait or 1920×1080 landscape) and scaled to fit */
+#frame { position: fixed; inset: 0; display: grid; place-items: center; background: var(--ink); }
+#stage:not(.ready) > * { visibility: hidden !important; }   /* black until every asset has loaded */
+#stage { position: absolute; left: 50%; top: 50%; transform-origin: 0 0; overflow: hidden; background: var(--ink); }
+#stage.portrait { width: 1080px; height: 1920px; }
+#stage.landscape { width: 1920px; height: 1080px; }
+
+.scene { position: absolute; inset: 0; visibility: hidden; }
+.scene.on { visibility: visible; }
+.scene .glow { position: absolute; inset: 0; background: radial-gradient(60% 45% at 50% 42%, var(--glow, rgba(1,166,82,.14)), transparent 70%); }
+.scene .grid { position: absolute; inset: 0; opacity: .5;
+  background-image: linear-gradient(var(--faint) 1px, transparent 1px), linear-gradient(90deg, var(--faint) 1px, transparent 1px);
+  background-size: 60px 60px; mask-image: radial-gradient(70% 55% at 50% 45%, #000 20%, transparent 80%); }
+.scene svg.art { position: absolute; overflow: visible; }
+
+/* department lockup: the Tamlik wordmark, a hairline, the department name */
+.lockup { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.lockup .logo { width: 300px; height: auto; display: block; }
+.lockup .rule { width: 64px; height: 2px; background: var(--accent); }
+.lockup .dept { font-family: var(--sans); font-weight: 600; font-size: 34px; letter-spacing: .5em; padding-left: .5em; color: var(--accent); white-space: nowrap; }
+.tagline { position: absolute; font-family: var(--serif); font-weight: 300; font-style: italic; font-size: 76px; line-height: 1.05; color: var(--paper); text-align: center; white-space: nowrap; }
+.tagline b { font-weight: 400; font-style: normal; color: var(--accent); }
+
+.portrait .lockup { left: 0; right: 0; top: 150px; }
+.portrait svg.art { left: 40px; top: 420px; width: 1000px; height: 1000px; }
+.portrait .tagline { left: 0; right: 0; top: 1500px; }
+
+.landscape .lockup { left: 1120px; width: 700px; top: 330px; }
+.landscape svg.art { left: 90px; top: 60px; width: 960px; height: 960px; }
+.landscape .tagline { left: 1120px; width: 700px; top: 600px; }
+
+.footer { position: absolute; font-size: 22px; letter-spacing: .42em; padding-left: .42em; color: var(--muted); text-align: center; }
+.portrait .footer { left: 0; right: 0; top: 1790px; }
+.landscape .footer { left: 1120px; width: 700px; top: 960px; }
+.portrait svg.art { top: 440px; }
+.portrait .tagline { top: 1520px; }
+
+/* closing caption, same content as the tower film's */
+.caption { position: absolute; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 26px; }
+.caption .site { font-family: var(--serif); font-weight: 300; font-size: 50px; letter-spacing: .3em; padding-left: .3em; }
+.caption .row { display: flex; gap: 34px; font-size: 22px; letter-spacing: .12em; color: var(--muted); }
+.caption .row span { display: flex; align-items: center; gap: 10px; }
+.caption .row svg { width: 26px; height: 26px; stroke: var(--green-text); }
+.portrait .caption { top: 1480px; }
+.landscape .caption { top: 760px; }
+
+/* ---- motion layers ---- */
+.layer { position: absolute; inset: 0; background: var(--ink); }
+/* the wipe: a soft, feathered edge (30% of the width) crosses the frame, the green line rides its middle */
+.scene.layer { visibility: visible;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--in, 100) * 1.3% - 30%), transparent calc(var(--in, 100) * 1.3%));
+  mask-image: linear-gradient(90deg, #000 calc(var(--in, 100) * 1.3% - 30%), transparent calc(var(--in, 100) * 1.3%)); }
+svg.art *:not([transform]), .pop, .spin { transform-box: fill-box; transform-origin: center; }
+svg .ch, .dept .ch, .tagline .wd { display: inline-block; }
+.lockup .rule { transform-origin: center; }
+#sweep { position: absolute; top: 0; bottom: 0; width: 4px; margin-left: -2px; left: calc(var(--sw, 0) * 1.3% - 15%); opacity: var(--swo, 0);
+  background: #7dffb8; box-shadow: 0 0 22px 6px rgba(1,166,82,.75), 0 0 120px 30px rgba(1,166,82,.35); z-index: 5; }
+#black { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 6; }
+
+#intro .big, #outro .big { position: absolute; left: 0; right: 0; display: flex; justify-content: center; }
+.biglogo { width: 760px; height: auto; overflow: visible; }
+.biglogo path { transform-box: fill-box; }
+#intro .glow, #outro .glow { background: radial-gradient(55% 40% at 50% 45%, rgba(1,166,82,.14), transparent 70%); }
+#intro .depts { position: absolute; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 26px;
+  font-weight: 600; font-size: 28px; letter-spacing: .42em; }
+#intro .depts span { display: inline-block; padding-left: .42em; }
+#intro .depts i { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); display: inline-block; }
+.portrait #intro .big { top: 760px; }
+.portrait #intro .depts { top: 1080px; flex-direction: column; gap: 30px; }
+.landscape #intro .big { top: 330px; }
+.landscape #intro .depts { top: 640px; }
+
+#outro .trio { position: absolute; left: 0; right: 0; display: flex; justify-content: center; gap: 56px; }
+#outro .dep { display: flex; align-items: center; gap: 16px; font-weight: 600; font-size: 30px; letter-spacing: .36em; color: var(--accent); }
+#outro .dep .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+.portrait #outro .big { top: 520px; }
+.portrait #outro .trio { top: 900px; flex-direction: column; align-items: center; gap: 44px; }
+.portrait #outro .caption { top: 1340px; }
+.landscape #outro .big { top: 250px; }
+.landscape #outro .trio { top: 560px; }
+.landscape #outro .caption { top: 720px; }
+
+/* full-bleed 3D scenes: the canvas fills the frame, soft shades keep the lockup and tagline readable */
+.scene.full canvas.room { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.scene.full .grid { display: none; }
+.scene.full .shade { position: absolute; left: 0; right: 0; pointer-events: none; }
+.scene.full .shade.top { top: 0; height: 34%; background: linear-gradient(rgba(8,9,11,.92), rgba(8,9,11,.55) 55%, transparent); }
+.scene.full .shade.bottom { bottom: 0; height: 36%; background: linear-gradient(transparent, rgba(8,9,11,.6) 45%, rgba(8,9,11,.93)); }
+.landscape .scene.full .shade.top { height: 100%; width: 46%; left: auto; right: 0; background: linear-gradient(90deg, transparent, rgba(8,9,11,.82) 30%, rgba(8,9,11,.95)); }
+.landscape .scene.full .shade.bottom { display: none; }
+
+/* a soft cinematic vignette over everything */
+#vignette { position: absolute; inset: 0; pointer-events: none; z-index: 4; background: radial-gradient(120% 90% at 50% 48%, transparent 58%, rgba(0,0,0,.42)); }
+
+/* first visit: the logo and a thin bar while the furniture downloads (after that the browser keeps it) */
+#loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 36px; background: var(--ink); z-index: 10; transition: opacity .8s ease; }
+#loading svg { width: min(46vw, 420px); height: auto; }
+#loading i { display: block; width: min(24vw, 200px); height: 2px; background: linear-gradient(90deg, transparent, var(--green), transparent) 0 0 / 50% 100% no-repeat, rgba(242,237,228,.12); animation: load 1.4s ease-in-out infinite; }
+@keyframes load { from { background-position: -100% 0, 0 0; } to { background-position: 200% 0, 0 0; } }
+#loading.gone { opacity: 0; pointer-events: none; }
+
+/* ======== the journey ======== */
+#city { position: absolute; inset: 0; width: 100%; height: 100%; display: block; visibility: hidden; }
+/* a room is drawn on its own canvas; seen from the city it shows only through its window (clip-path set per frame) */
+.scene.room { visibility: hidden; background: transparent; }
+.scene.room canvas.room { background: #000; }
+.scene.room .shade, .scene.room .ui { opacity: var(--ui, 0); }
+.scene.room .ui { position: absolute; inset: 0; }
+
+/* the closing caption over the drone show: the three departments and where to find Tamlik */
+#closing { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+#closing::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 46%; background: linear-gradient(transparent, rgba(6,7,9,.45) 45%, rgba(6,7,9,.78)); }
+#closing .trio { position: absolute; left: 0; right: 0; display: flex; justify-content: center; gap: 56px; text-shadow: 0 1px 18px rgba(0,0,0,.6); }
+#closing .dep { display: flex; align-items: center; gap: 16px; font-weight: 600; font-size: 28px; letter-spacing: .36em; color: var(--accent); }
+#closing .dep .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+#closing .caption { text-shadow: 0 1px 18px rgba(0,0,0,.6); }
+#closing .caption .row { color: rgba(242,237,228,.8); }
+.portrait #closing .trio { top: 1330px; gap: 40px; }
+.portrait #closing .dep { font-size: 24px; gap: 12px; letter-spacing: .3em; }
+.portrait #closing .caption { top: 1470px; }
+.portrait #closing .caption .row { flex-direction: column; align-items: center; gap: 18px; }
+.landscape #closing .trio { top: 780px; }
+.landscape #closing .caption { top: 860px; }
+
+/* the curtains: closed on the 3D logo at the start (and again at the end of the loop) */
+#curtains { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+#curtains .half { position: absolute; left: 0; right: 0; height: 50.2%; background: var(--ink); }
+#curtains .half.top { top: 0; }
+#curtains .half.bot { bottom: 0; }
+#curtains .mark { position: absolute; left: 0; right: 0; top: 50%; margin-top: -260px; display: flex; flex-direction: column; align-items: center; }
+#curtains .mark::before { content: ""; position: absolute; left: 50%; top: 190px; width: 900px; height: 380px; transform: translate(-50%, -50%); background: radial-gradient(closest-side, rgba(1,166,82,.16), rgba(1,166,82,0)); z-index: -1; }
+#curtains .logo3d { width: 1000px; height: auto; aspect-ratio: 1400 / 480; display: block; }
+.landscape #curtains .logo3d { width: 920px; }
+#curtains .depts { display: flex; justify-content: center; align-items: center; gap: 26px; margin-top: 10px; font-weight: 600; font-size: 26px; letter-spacing: .42em; }
+#curtains .depts span { display: inline-block; padding-left: .42em; }
+#curtains .depts i { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); display: inline-block; }
+.portrait #curtains .depts { flex-direction: column; gap: 26px; margin-top: 40px; }
+#vignette { z-index: 2; }
+#black { z-index: 6; }
